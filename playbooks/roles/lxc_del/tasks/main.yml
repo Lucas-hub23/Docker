@@ -1,0 +1,41 @@
+# roles/lxc_deploy/tasks/main.yml
+- name: Bereken containerverdeling (round robin)
+  set_fact:
+    container_plan: >-
+      {{
+        (container_plan | default([]))
+        + [ {
+            'node': (groups['pvenodes'] | sort)[item % (groups['pvenodes'] | length)],
+            'vmid': vmid_start + item
+          } ]
+      }}
+  loop: "{{ range(container_count) | list }}"
+  run_once: true
+  delegate_to: localhost
+
+- name: Stop container if running
+  community.proxmox.proxmox:
+    api_host: "{{ hostvars[item.node].ansible_host }}"
+    api_user: "{{ pve_api_user }}"
+    api_token_id: "{{ pve_api_token_id }}"
+    api_token_secret: "{{ pve_api_token_secret }}"
+    node: "{{ item.node }}"
+    vmid: "{{ item.vmid }}"
+    state: stopped
+  loop: "{{ container_plan }}"
+  when: item.node == inventory_hostname
+  delegate_to: localhost
+
+- name: Remove LXC containers distributed across nodes
+  community.proxmox.proxmox:
+    api_host: "{{ hostvars[item.node].ansible_host }}"
+    api_user: "{{ pve_api_user }}"
+    api_token_id: "{{ pve_api_token_id }}"
+    api_token_secret: "{{ pve_api_token_secret }}"
+    node: "{{ item.node }}"
+    vmid: "{{ item.vmid }}"
+    state: absent
+  loop: "{{ container_plan }}"
+  when: item.node == inventory_hostname
+  delegate_to: localhost
+  

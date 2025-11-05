@@ -1,0 +1,11 @@
+# playbooks/site.yml
+---
+- name: Create containers and VMs on Proxmox nodes
+  hosts: pvenodes
+  gather_facts: false
+  vars_files:
+    - ../group_vars/containers.yml
+  roles:
+    - { role: lxc_deploy, tags: ["create_containers"] }
+    - { role: lxc_del, tags: ["del_containers"] }
+

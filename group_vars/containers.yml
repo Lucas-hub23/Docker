@@ -1,0 +1,36 @@
+# group_vars/containers.yml
+# Algemene instellingen voor LXC-containers (WordPress basis)
+
+# Aantal en ID-range
+container_count: 3
+vmid_start: 150
+
+# Template & storage
+ostemplate: "cephfs:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
+storage: "rbd"
+disk_size: 30   # GB
+
+# Resources
+cores: 2
+memory: 2048    # MB
+swap: 0
+
+# Netwerk
+bridge: "vmbr0"
+ip_prefix: "10.24.28."
+ip_cidr: "/24"
+gw: "10.24.28.10"
+firewall: true
+
+# Container gedrag
+unprivileged: true
+onboot: true
+
+# Authenticatie
+root_password: "changeme123"
+enable_root_pw_login: True  
+
+# Naamgeving
+hostname_pattern: "docker-{{ vmid }}"
+
+
