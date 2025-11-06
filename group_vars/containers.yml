@@ -33,4 +33,5 @@ enable_root_pw_login: True
 # Naamgeving
 hostname_pattern: "docker-{{ vmid }}"
 
-
+nodes:
+  { }

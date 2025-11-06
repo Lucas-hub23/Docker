@@ -1,0 +1,16 @@
+---
+- name: Wait for TCP/22 to accept connections
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host | default(inventory_hostname) }}"
+    port: "{{ wait_ssh_port | default(22) }}"
+    delay: "{{ wait_ssh_delay | default(2) }}"     # startpauze
+    sleep: "{{ wait_ssh_sleep | default(3) }}"     # poll-interval
+    timeout: "{{ wait_ssh_timeout | default(600) }}"  # totaal 10 min
+    state: started
+  delegate_to: localhost
+
+- name: Wait for Ansible connection to succeed
+  ansible.builtin.wait_for_connection:
+    delay: 0
+    sleep: "{{ wait_ssh_sleep | default(3) }}"
+    timeout: "{{ wait_conn_timeout | default(300) }}"

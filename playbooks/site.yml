@@ -7,5 +7,19 @@
     - ../group_vars/containers.yml
   roles:
     - { role: lxc_deploy, tags: ["create_containers"] }
-    - { role: lxc_del, tags: ["del_containers"] }
+    #- { role: lxc_del, tags: ["del_containers"] }
+
+- name: Wait until dockerlxc nodes are reachable over SSH
+  hosts: dockerlxc
+  gather_facts: false
+  any_errors_fatal: true
+  roles:
+    - { role: wait_ssh, tags: ["wait_ssh"] }
+
+- name: installer docker on container
+  hosts: dockerlxc
+  gather_facts: true
+  roles:  
+    - { role: docker_dp, tags: ["docker_dp"] }
+
 
