@@ -1,0 +1,29 @@
+- name: 1. Download Cloud Image
+  ansible.builtin.get_url:
+    url: "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
+    dest: "/mnt/pve/cephfs/template/iso/ubuntu-12-generic-amd64.qcow2"
+    force: no
+    mode: '0644'
+  delegate_to: pve1
+  run_once: true
+
+
+- name: 2. Kopieer het build-script naar de Proxmox Node (ongewijzigd)
+  ansible.builtin.copy:
+    src: files/scripts/vm_template.sh
+    dest: /tmp/vm_template.sh
+    mode: '0755'
+  delegate_to: pve1
+  run_once: true
+
+- name: 3. Voer het build-script
+  ansible.builtin.command: >
+    /tmp/vm_template.sh 
+    9001 
+    "ubuntu-12-cloudinit-template" 
+    "/mnt/pve/cephfs/template/iso/ubuntu-12-generic-amd64.qcow2" 
+    "rbd"
+  args:
+    creates: /etc/pve/qemu-server/9001.conf
+  delegate_to: pve1
+  run_once: true

@@ -13,42 +13,15 @@ ansible_user: root
 ansible_password: Poepaap123
 ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 ansible_python_interpreter: /usr/bin/python3
-
-proxmox_hosts:
-  - pve1
-  - pve2
-  - pve3
-
-crm_vms:
-  - { id: 210, name: "crm-server-01", ip: "10.24.28.20" }
-  - { id: 211, name: "crm-server-02", ip: "10.24.28.21" }
-  - { id: 212, name: "crm-server-03", ip: "10.24.28.22" }
-      
+  
 vm_template_id: 9001
 vm_storage_pool: rbd
-vm_template_name: "debian-12-generic-amd64.qcow2"
+vm_template_name: "ubuntu-12-generic-amd64.qcow2"
 
-#database variabelen
-wp_db_name: wordpress_database
-wp_db_user: wp_gebruiker
-wp_db_password: "een_sterk_geheim_wachtwoord_hier"
-wordpress_install_dir: /var/www/html
+#ssh keys
+sshkey_default: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
 
-
-ssh_key_admin: "{{ lookup('file', '~/.ssh/admin_wp_id_ed25519.pub') }}"
-ssh_key_developer: "{{ lookup('file', '~/.ssh/dev_wp_id_ed25519.pub') }}"
-
-
-nodes:
-  - pve1
-  - pve2
-  - pve3
-
-vmid_base: 200
-num_containers: 3 # Dit zal 201, 202, 203 maken (pas aan naar wens)
-container_name: 'crm-server-'
-
-# Hardware en Opslag
+#hardware
 memory: 2048
 cores: 2
 storage: 'rbd' # Je hoofdstoragelocatie (waar de VM-disks komen)
@@ -56,26 +29,17 @@ network_bridge: 'vmbr0'
 
 # Cloud Image Locatie (Moet de exacte locatie van je QCOW2 zijn)
 image_storage: 'cephfs'
-image_file: 'template/iso/debian-12-generic-amd64.qcow2' 
 
 # --- Netwerk Instellingen ---
-network_subnet: '10.24.28'
-ip_base: 210 # VM's krijgen .210, .211, .212 etc.
+ip_prefix: "10.24.28."
+ip_base: 150 # VM's krijgen .210, .211, .212 etc.
 network_gateway: '10.24.28.1'
 network_nameservers: '1.1.1.1'
 
 # --- Cloud-Init Instellingen ---
-ci_username: 'admin'
+ci_user: 'lucas'
 ci_password: 'Poepaap123' # Gebruik later een Ansible Vault
 ssh_key_crm_admin: "{{ lookup('file', '~/.ssh/crm_admin_id_ed25519.pub') }}"
 
-dolibarr_version: "18.0.4"
+docker_vmid: 150
 
-db_name_crm: "dolibarr_db"
-
-db_user_crm: "dolibarr_user"
-
-db_password_crm: "Poepaap123"
-
-web_user: "www-data"
-web_group: "www-data"

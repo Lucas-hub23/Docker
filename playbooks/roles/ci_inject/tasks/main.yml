@@ -1,0 +1,29 @@
+- name: 2. Kopieer het build-script naar de Proxmox Node (ongewijzigd)
+  ansible.builtin.copy:
+    src: files/scripts/cloud_init.sh
+    dest: /tmp/cloud_init.sh
+    mode: '0755'
+  delegate_to: pve1
+  run_once: true
+
+- name: 2b. Schrijf public key naar tijdelijk bestand
+  copy:
+    content: "{{ sshkey_default }}\n"
+    dest: /tmp/ci_key.pub
+    mode: '0600'
+  delegate_to: pve1
+  run_once: true
+
+- name: 3. Voer het build-script uit dat cloud init inject
+  ansible.builtin.command: >
+    /tmp/cloud_init.sh 
+    {{ docker_vmid }}
+    {{ ci_user }} 
+    {{ ci_password }}
+    /tmp/ci_key.pub
+    {{ ip_prefix }}
+    {{ network_gateway }}
+  #args:
+    #creates: /etc/pve/qemu-server/9001.conf
+  delegate_to: pve1
+  run_once: true

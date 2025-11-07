@@ -1,0 +1,47 @@
+- name: Clone VM from template
+  community.proxmox.proxmox_kvm:
+    api_host: "{{ proxmox_host }}"
+    api_user: "{{ pve_api_user }}"
+    api_token_id: "{{ pve_api_token_id }}"
+    api_token_secret: "{{ pve_api_token_secret }}"
+    node: "pve1"
+    clone: "{{ vm_template_name }}"            
+    vmid: "{{ vm_template_id }}"
+    name: "Docker-test"
+    newid: "{{ docker_vmid }}"
+    full: true                         
+    storage: "{{ storage }}"                 
+    format: qcow2
+    ide:
+      ide2: "{{ storage }}:cloudinit"    
+    state: present
+  delegate_to: pve1
+ 
+# 2) Cloud-init drive + opties zetten (ide2 + ciuser + sshkeys + ipconfig0)
+- name: Configure cloud-init (before first boot)
+  community.proxmox.proxmox_kvm:
+    api_host: "{{ proxmox_host }}"
+    api_user: "{{ pve_api_user }}"
+    api_token_id: "{{ pve_api_token_id }}"
+    api_token_secret: "{{ pve_api_token_secret }}"
+    node: "pve1"
+    vmid: "{{ docker_vmid }}"
+    ide:
+      ide2: "{{ storage }}:cloudinit"        # <— essentieel: maakt vm-<vmid>-cloudinit aan
+    ciuser: "lucas"
+    cipassword: "Test12345"
+    citype: nocloud
+    ciupgrade: true
+    sshkeys: "{{ sshkey_default }}"
+    ipconfig:
+      ipconfig0: "ip=10.24.28.150/24,gw=10.24.28.1"
+    nameservers: "1.1.1.1"
+    searchdomains: "lan"
+    net:
+      net0: "virtio,bridge=vmbr0"
+    serial:
+      serial0: socket 
+    vga: "serial0"
+    agent: 1
+    state: present
+  delegate_to: pve1

@@ -1,0 +1,32 @@
+- name: Clone VM from template
+  community.proxmox.proxmox_kvm:
+    api_host: "{{ proxmox_host }}"
+    api_user: "{{ pve_api_user }}"
+    api_token_id: "{{ pve_api_token_id }}"
+    api_token_secret: "{{ pve_api_token_secret }}"
+    node: "pve1"
+    clone: "{{ vm_template_name }}"            
+    vmid: "{{ vm_template_id }}"
+    name: "Docker-test"
+    newid: "{{ docker_vmid }}"
+    full: true                         
+    storage: "{{ storage }}"                 
+    format: qcow2
+    ide:
+      ide2: "{{ storage }}:cloudinit"    
+    scsihw: virtio-scsi-pci 
+    state: present
+  delegate_to: pve1
+
+- name: start vm
+  community.proxmox.proxmox_kvm:
+    api_host: "{{ proxmox_host }}"
+    api_user: "{{ pve_api_user }}"
+    api_token_id: "{{ pve_api_token_id }}"
+    api_token_secret: "{{ pve_api_token_secret }}"
+    node: "pve1"
+    vmid: "{{ docker_vmid }}"
+    scsi:
+      scsi0: "{{ vm_storage_pool }}:20,format=qcow2"
+    state: present
+  delegate_to: pve1

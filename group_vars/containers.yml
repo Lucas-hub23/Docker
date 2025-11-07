@@ -1,10 +1,6 @@
 # group_vars/containers.yml
 # Algemene instellingen voor LXC-containers (WordPress basis)
 
-# Aantal en ID-range
-container_count: 3
-vmid_start: 150
-
 # Template & storage
 ostemplate: "cephfs:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
 storage: "rbd"
@@ -19,7 +15,7 @@ swap: 0
 bridge: "vmbr0"
 ip_prefix: "10.24.28."
 ip_cidr: "/24"
-gw: "10.24.28.10"
+gw: "10.24.28.1"
 firewall: true
 
 # Container gedrag
@@ -30,8 +26,17 @@ onboot: true
 root_password: "changeme123"
 enable_root_pw_login: True  
 
-# Naamgeving
-hostname_pattern: "docker-{{ vmid }}"
 
-nodes:
-  { }
+container_plan:
+  - node: pve1
+    vmid: 150
+    ip_last: 150   
+    hostname: docker-150  
+  - node: pve2
+    vmid: 151
+    ip_last: 151
+    hostname: docker-151
+  - node: pve3
+    vmid: 152
+    ip_last: 152
+    hostname: docker-152
