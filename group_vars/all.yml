@@ -2,7 +2,7 @@
 # Algemene instellingen voor het hele project
 
 # === Proxmox API credentials ===
-proxmox_host: pve1
+proxmox_host: pve2
 pve_api_user: "root@pam"
 pve_api_token_id: "ansible"
 # ⚠️ Zet je echte secret in een Vault of environment var:
@@ -14,7 +14,7 @@ ansible_password: Poepaap123
 ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 ansible_python_interpreter: /usr/bin/python3
   
-vm_template_id: 9001
+vm_template_id: 9003
 vm_storage_pool: rbd
 vm_template_name: "ubuntu-12-generic-amd64.qcow2"
 
@@ -32,7 +32,7 @@ image_storage: 'cephfs'
 
 # --- Netwerk Instellingen ---
 ip_prefix: "10.24.28."
-ip_base: 150 # VM's krijgen .210, .211, .212 etc.
+ip_base: 152 # VM's krijgen .210, .211, .212 etc.
 network_gateway: '10.24.28.1'
 network_nameservers: '1.1.1.1'
 
@@ -41,5 +41,5 @@ ci_user: 'lucas'
 ci_password: 'Poepaap123' # Gebruik later een Ansible Vault
 ssh_key_crm_admin: "{{ lookup('file', '~/.ssh/crm_admin_id_ed25519.pub') }}"
 
-docker_vmid: 150
+docker_vmid: 152
 

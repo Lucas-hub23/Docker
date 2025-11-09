@@ -3,7 +3,7 @@
     src: files/scripts/cloud_init.sh
     dest: /tmp/cloud_init.sh
     mode: '0755'
-  delegate_to: pve1
+  delegate_to: pve3
   run_once: true
 
 - name: 2b. Schrijf public key naar tijdelijk bestand
@@ -11,7 +11,7 @@
     content: "{{ sshkey_default }}\n"
     dest: /tmp/ci_key.pub
     mode: '0600'
-  delegate_to: pve1
+  delegate_to: pve3
   run_once: true
 
 - name: 3. Voer het build-script uit dat cloud init inject
@@ -25,5 +25,5 @@
     {{ network_gateway }}
   #args:
     #creates: /etc/pve/qemu-server/9001.conf
-  delegate_to: pve1
+  delegate_to: pve3
   run_once: true
