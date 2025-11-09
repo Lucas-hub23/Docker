@@ -1,0 +1,27 @@
+- name: Install Python Docker Library for Ansible
+  ansible.builtin.apt:
+    name: python3-docker
+    state: present
+
+- name: Init Swarm op eerste node
+  community.docker.docker_swarm:
+    state: present
+    advertise_addr: "{{ hostvars[inventory_hostname].ansible_host }}"
+    listen_addr:    "{{ hostvars[inventory_hostname].ansible_host }}:2377"
+  when: inventory_hostname == groups['dockervms'][0]
+
+- name: Get manager join token
+  community.docker.docker_swarm_info:
+  register: swarm_info
+  run_once: true
+  delegate_to: "{{ groups['dockervms'][0] }}"
+
+- name: Join other hosts as managers
+  community.docker.docker_swarm:
+    state: join
+    advertise_addr: "{{ hostvars[inventory_hostname].ansible_host }}"
+    listen_addr:    "{{ hostvars[inventory_hostname].ansible_host }}:2377"
+    join_token: "{{ swarm_info.swarm_facts.JoinTokens.Manager }}"
+    remote_addrs:
+      - "{{ hostvars[groups['dockervms'][0]].ansible_host }}:2377"
+  when: inventory_hostname != groups['dockervms'][0]

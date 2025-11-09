@@ -1,0 +1,7 @@
+
+- name: configure swarm
+  become: true
+  hosts: dockervms
+  gather_facts: true
+  roles:  
+    - { role: docker_swarm, tags: ["docker_swarm"] }
