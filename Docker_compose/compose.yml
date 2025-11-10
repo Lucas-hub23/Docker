@@ -1,7 +1,54 @@
-# docker-compose.yml
-version: "3"
+version: "3.9"
+
 services:
-  web:
-    image: nginx:latest
+  dbA:
+    image: mariadb:10.11
+    container_name: dbA
+    environment:
+      MARIADB_ROOT_PASSWORD: secretA
+      MARIADB_DATABASE: appdb
+      MARIADB_USER: app
+      MARIADB_PASSWORD: app_pw
     ports:
-      - "8080:80"
+      - "3307:3306"              # Hostpoort -> Containerpoort
+    networks:
+      netA:
+        ipv4_address: 172.21.0.2
+      netShared:
+        aliases:
+          - mysql-a
+
+  dbB:
+    image: mariadb:10.11
+    container_name: dbB
+    environment:
+      MARIADB_ROOT_PASSWORD: secretB
+      MARIADB_DATABASE: appdb
+      MARIADB_USER: app
+      MARIADB_PASSWORD: app_pw
+    ports:
+      - "3308:3306"
+    networks:
+      netB:
+        ipv4_address: 172.22.0.2
+      netShared:
+        aliases:
+          - mysql-b
+
+# --------- NETWORK DEFINITIES -------------
+networks:
+  netA:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+  netB:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
+  netShared:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.23.0.0/24
